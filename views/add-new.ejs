@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+</head>
+
+<body>
+
+    <% 
+    const availableServices = ['bath', 'phone', 'wifi','tv', 'thermometer-4', 'snowflake-o', 'glass', 'cutlery', 'archive', 'car', 'sun-o'];
+    const availableServicesTags = ['Baño', 'Teléfono', 'Wifi', 'TV', 'Calefacción', 'Aire acondicionado', 'Mueble-bar', 'Cocina', 'Trastero', 'Parking', 'Terraza/Balcón']
+    const availableRules = ['fire', 'music', 'paw'];
+    const availableRulesTags = ['Fumar', 'Fiestas', 'Mascotas'];
+     %> 
+
+    <% 
+    var id;
+    var title;
+    var description;
+    var rulesDescription;
+    var rulesIcons;
+    var beds = [{beds: 0},{additionalBeds: 0}];
+    var rooms;
+    var bathRooms;
+    var photos = new Array(4);
+    var price;
+    var occupancy;
+    var apartmentSize;
+    var services;
+    var location;
+    var reservations;
+    var operation = "add-new";
+
+    if (editMode) {
+        id = apartment._id;
+        title = apartment.title;
+        description = apartment.description;
+        rulesDescription = apartment.rulesDescription;
+        rulesIcons = apartment.rulesTags;
+        beds = apartment.beds;
+        rooms = apartment.rooms;
+        bathRooms = apartment.bathRooms;
+        photos = apartment.photos;
+        price = apartment.price;
+        occupancy = apartment.occupancy;
+        apartmentSize = apartment.apartmentSize;
+        services = apartment.services;
+        location = apartment.location;
+        reservations = apartment.reservations;
+        operation = "edit";
+    }
+    %>
+
+    <div class="w3-card-4">
+
+        <div class="w3-container w3-brown w3-margin-bottom">
+            <% if (operation == "edit") { %>
+            <h2>Modificar formulario</h2>
+            <% } else { %>
+            <h2>Formulario de alta</h2>
+            <% } %>
+        </div>
+
+        <% if (operation == "edit") { %>
+        <form class="w3-container" action="/admin/apartment/<%= operation %>/edit" method="POST">
+            <% } else { %>
+            <form class="w3-container" action="/admin/<%= operation %>" method="POST">
+                <% } %>
+
+
+                <input type="hidden" id="id" name="_id" value="<%= id %>">
+
+                <div>
+                    <label for="title">Título del apartamento</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="text" name="title" id="title"
+                        required maxlength="50" value="<%= title  %>">
+                </div>
+
+                <h4><strong>Características</strong></h4>
+                <div class="w3-third">
+                    <label for="numberSingle">Superficie habitable (m<sup>2</sup>)</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="apartmentSize"
+                        id="apartmentSize" required min="0" value="<%= apartmentSize %>">
+                </div>
+                <div class="w3-third">
+                    <label for="numberSingle">Capacidad Inquilinos</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="occupancy"
+                        id="occupancy" required min="0" value="<%= occupancy %>">
+                </div>
+                <div class="w3-third">
+                    <label for="additionalBeds">Precio (por noche)</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="price" id="price"
+                        required min="0" value="<%= price %>">
+                </div>
+
+                <div>
+                    <label for="description">Descripción</label>
+                    <textarea class="w3-input w3-border w3-round w3-margin-bottom" name="description" id="description"
+                        rows="3"><%= description %></textarea>
+                </div>
+
+                <label for="mainPhoto">Fotos del apartamento</label>
+
+                <% if (operation == "edit") {%> 
+                    <% photos.forEach((photo, index) => { %>
+                    <div>
+                        <% if (index == 0) { %>
+                        <input class="w3-input w3-border w3-round w3-margin-bottom w3-half" type="text" name="photoUrl"
+                            id="mainPhoto" placeholder="Foto principal" required value="<%= photo.url %>">
+                        <% } else { %>
+                        <input class="w3-input w3-border w3-round w3-margin-bottom w3-half" type="text" name="photoUrl"
+                            id="mainPhoto" placeholder="Foto <% index %>" value="<%= photo.url %>">
+                        <% } %>
+
+                        <input class="w3-input w3-border w3-round w3-margin-bottom w3-half" type="text" name="photoTitle"
+                            id="mainPhotoFooter" maxlength="30" placeholder="Descripción" value="<%= photo.title %>">
+                    </div>
+                    <% }); %>
+                <% } else { %> 
+                    <% for (let i=0; i<photos.length; i++) { %> 
+                        <div>
+                            <% if (i == 0) { %>
+                            <input class="w3-input w3-border w3-round w3-margin-bottom w3-half" type="text" name="photoUrl"
+                                id="mainPhoto" placeholder="Foto principal" required>
+                            <% } else { %>
+                            <input class="w3-input w3-border w3-round w3-margin-bottom w3-half" type="text" name="photoUrl"
+                                id="mainPhoto" placeholder="Foto <% i %>">
+                            <% } %>
+    
+                            <input class="w3-input w3-border w3-round w3-margin-bottom w3-half" type="text" name="photoTitle"
+                                id="mainPhotoFooter" maxlength="30" placeholder="Descripción">
+                        </div>
+                    <% } %> 
+
+                <% } %> 
+
+
+                <div class="w3-margin-top">
+                    <h4><strong>Servicios</strong></h4>
+
+                    <% availableServices.forEach((element, index) => { %>
+
+                        <% if (operation == "edit") { %>
+
+                            <% if (apartment.services.includes(element)) { %>
+                                <input class="w3-check" type="checkbox" id="services" name="services" value="<%= element %>"
+                                checked>
+                            <% } else { %>
+                                <input class="w3-check" type="checkbox" id="services" name="services" value="<%= element %>">
+                            <% } %>
+
+                        <% } else { %>
+                            <input class="w3-check" type="checkbox" id="services" name="services" value="<%= element %>">
+                        <% } %>
+
+                    <label class="w3-margin-right" for="services"> <%= availableServicesTags[index] %></label>
+                    <% }); %>
+
+                    <br>
+                </div>
+
+                <div class="w3-margin-top">
+                    <h4><strong>Se permite...</strong></h4>
+
+                    <% availableRules.forEach((element, index) => { %>
+
+                        <% if (operation == "edit") { %>
+
+                            <% if (apartment.rulesIcons.includes(element)) { %>
+                                <input class="w3-check" type="checkbox" id="rulesIcons" name="rulesIcons" value="<%= element %>"
+                                checked>
+                            <% } else { %>
+                                <input class="w3-check" type="checkbox" id="rulesIcons" name="rulesIcons" value="<%= element %>">
+                            <% } %>
+
+                        <% } else { %>
+                            <input class="w3-check" type="checkbox" id="rulesIcons" name="rulesIcons" value="<%= element %>">
+                        <% } %>
+
+                    <label class="w3-margin-right" for="rulesTags"> <%= availableRulesTags[index] %></label>
+                    <% }); %>
+
+                    <br>
+                </div>
+
+                <div class="w3-margin-top">
+                    <label for="description">Otras reglas</label>
+                    <textarea class="w3-input w3-border w3-round w3-margin-bottom" name="rulesDescription"
+                        id="rulesDescription" rows="3"><%= rulesDescription %></textarea>
+                </div>
+
+                <h4><strong>Camas</strong></h4>
+                <div class="w3-third">
+                    <label for="numberSingle">Dobles</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="doubleBeds"
+                        id="doubleBeds" required min="0" value="<%= beds[0].beds %>">
+                </div>
+                <div class="w3-third">
+                    <label for="numberSingle">Individuales</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="singleBeds"
+                        id="singleBeds" required min="0" value="<%= beds[1].beds %>">
+                </div>
+                <div class="w3-third">
+                    <label for="additionalBeds">Adicionales</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="additionalBeds"
+                        id="additionalBeds" required min="0" value="<%= beds[1].additionalBeds %>">
+                </div>
+
+                <h4><strong>Habitaciones</strong></h4>
+                <div class="w3-half">
+                    <label for="numberSingle">Número habitaciones</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="rooms" id="rooms"
+                        required min="0" value="<%= rooms %>">
+                </div>
+                <div class="w3-half">
+                    <label for="numberSingle">Baños</label>
+                    <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" name="bathRooms"
+                        id="bathRooms" required min="0" value="<%= bathRooms %>">
+                </div>
+
+                <h4><strong>Localización</strong></h4>
+                <div class="w3-row">
+
+                    <% if (operation == "edit") { %> 
+
+                    <div class="w3-half">
+                        <label for="numberSingle">Provincia</label>
+                        <input class="w3-input w3-border w3-round w3-margin-bottom" type="text" name="province"
+                            id="province" maxlength="30" required value="<%= location.province %>">
+                    </div>
+                    <div class="w3-half">
+                        <label for="numberSingle">Ciudad</label>
+                        <input class="w3-input w3-border w3-round w3-margin-bottom" type="text" name="city" id="city"
+                            maxlength="30" required value="<%= location.city %>">
+                    </div>
+                    <div class="w3-half">
+                        <label for="additionalBeds">GPS (longitud)</label>
+                        <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" step="0.001"
+                            name="GPSx" id="GPSx" required value="<%= location.GPS[0] %>">
+                    </div>
+                    <div class="w3-half">
+                        <label for="additionalBeds">GPS (latitud)</label>
+                        <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" step="0.001"
+                            name="GPSy" id="GPSy" required value="<%= location.GPS[1] %>">
+                    </div>
+
+                    <% } else { %> 
+
+                        <div class="w3-half">
+                            <label for="numberSingle">Provincia</label>
+                            <input class="w3-input w3-border w3-round w3-margin-bottom" type="text" name="province"
+                                id="province" maxlength="30" required>
+                        </div>
+                        <div class="w3-half">
+                            <label for="numberSingle">Ciudad</label>
+                            <input class="w3-input w3-border w3-round w3-margin-bottom" type="text" name="city" id="city"
+                                maxlength="30" required>
+                        </div>
+                        <div class="w3-half">
+                            <label for="additionalBeds">GPS (longitud)</label>
+                            <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" step="0.001"
+                                name="GPSx" id="GPSx" required>
+                        </div>
+                        <div class="w3-half">
+                            <label for="additionalBeds">GPS (latitud)</label>
+                            <input class="w3-input w3-border w3-round w3-margin-bottom" type="number" step="0.001"
+                                name="GPSy" id="GPSy" required>
+                        </div>
+
+                    <% } %> 
+                </div>
+
+                <button type="submit" class="w3-btn w3-brown w3-margin-top w3-round">Enviar</button>
+                <!--input type="submit"-->
+            </form>
+    </div>
+</body>
+
+</html>

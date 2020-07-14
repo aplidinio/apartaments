@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <!-- Genera un error (unexpected token ";") si se usa el condicional switch-case -->
+    <% if (error == 1) { %>
+    <h3>¡Fechas erróneas! No puedes hacer CheckIn después del CheckOut.</h3>
+    <% } else if (error == 2) { %>
+    <h3>Tu reserva excede la capacidad máxima de inquilinos del apartamento. Busca otro que acepte más inquilinos.</h3>
+    <% } else if (error == 3) { %>
+    <h3>Lo sentimos. Este apartamento está reservado. Prueba con otras fechas.</h3>
+    <% } else { %>
+    <h2>¡Apartamento reservado!</h2>
+    <h4>Recuerda las fechas: </h4>
+    <h4>Check In: <%= checkIn %> </h4>
+    <h4>Check Out: <%= checkOut %> </h4>
+    <% } %>
+
+    <button type="button" onclick="window.close();">Cerrar</button>
+
+</body>
+
+</html>

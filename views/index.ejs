@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friendly Apartments</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<%- include('includes/header.ejs') %> 
+
+<body class="w3-light-grey">
+
+    <% 
+    const availableServices = ['bath', 'phone', 'wifi','tv', 'thermometer-4', 'snowflake-o', 'glass', 'cutlery', 'archive', 'car', 'sun-o'];
+    const availableServicesTags = ['Baño', 'Teléfono', 'Wifi', 'TV', 'Calefacción', 'Aire acondicionado', 'Mueble-bar', 'Cocina', 'Trastero', 'Parking', 'Terraza/Balcón']
+    const availableRules = ['fire', 'music', 'paw'];
+    const availableRulesTags = ['Fumar', 'Fiestas', 'Mascotas'];
+     %>
+
+    <!-- Navigation Bar -->
+    <div class="w3-bar w3-white w3-large">
+        <a href="#" class="w3-bar-item w3-button w3-brown w3-mobile"><i class="fa fa-bed w3-margin-right"></i>Logo</a>
+        <a href="#gallery" class="w3-bar-item w3-button w3-mobile">Apartamentos</a>
+        <% if (isAdmin) { %>
+        <a href="/admin/add-new" class="w3-bar-item w3-button w3-mobile">Nuevo Apartamento</a>
+        <% } %>
+        <a href="#about" class="w3-bar-item w3-button w3-mobile">Acerca de...</a>
+        <a href="#contact" class="w3-bar-item w3-button w3-mobile">Contacto</a>
+        <% if (!isAdmin) { %>
+        <a href="#rooms" class="w3-bar-item w3-button w3-right w3-light-grey w3-mobile">¡Reserva ahora!</a>
+        <% } %>
+    </div>
+
+</body>
+
+<!-- Header -->
+<header class="w3-display-container w3-content" style="max-width:1500px;">
+    <img class="w3-image" src="/images/theApartment.jpeg" alt="The Apartment" style="min-width:1000px" width="1500"
+        height="800">
+    <div class="w3-display-left w3-padding w3-col l6 m8">
+        <div class="w3-container w3-brown">
+            <h2><i class="fa fa-bed w3-margin-right"></i>Friendly Rent</h2>
+        </div>
+        <div class="w3-container w3-sand w3-padding-16">
+
+            <h3> Bienvenido al portal donde encontrarás tu apartamento soñado en muy pocos clicks.</h3>
+        
+        </div>
+    </div>
+</header>
+
+<!-- Page content -->
+<div class="w3-content" style="max-width:1532px;">
+
+    <div class="w3-container w3-margin-top w3-black w3-opacity">
+        <h2>Un Universo de Apartamentos</h2>
+        <p>Hacerte sentir como en tu casa es nuestro eslogan. Ofrecemos los mejores apartamentos cuidadosamente
+            seleccionados. Disfruta y relájate.</p>
+
+    </div>
+
+    <!-- Search of apartments -->
+    <% if (!isAdmin) {%>
+
+    <div class="w3-container w3-margin-top" id="rooms">
+        <h3>Busca tu apartamento ideal</h3>
+    </div>
+
+    <form action="/" method="POST">
+        <div class="w3-row-padding">
+            <div class="w3-col m3">
+                <label><i class="fa fa-calendar-o"></i> Check In</label>
+                <input class="w3-input w3-border" type="date" placeholder="DD MM YYYY" id="CheckIn" name="CheckIn">
+            </div>
+            <div class="w3-col m3">
+                <label><i class="fa fa-calendar-o"></i> Check Out</label>
+                <input class="w3-input w3-border" type="date" placeholder="DD MM YYYY" id="CheckOut" name="CheckOut">
+            </div>
+
+            <div class="w3-col m3">
+                <label><i class="fa fa-map-marker"></i> Provincia</label>
+                <input class="w3-input w3-border" type="text" id="province" name="province" required>
+            </div>
+            <div class="w3-col m3">
+                <label><i class="fa fa-building"></i> Ciudad</label>
+                <input class="w3-input w3-border" type="text" id="city" name="city" required>
+            </div>
+        </div>
+        <div class="w3-row-padding w3-margin-top">
+            <div class="w3-col m3">
+                <label><i class="fa fa-money"></i> Precio mínimo</label>
+                <input class="w3-input w3-border" type="number" name="minPrice" min="0" value="0">
+            </div>
+            <div class="w3-col m3">
+                <label><i class="fa fa-money"></i> Precio máximo</label>
+                <input class="w3-input w3-border" type="number" name="maxPrice" min="0" placeholder="0" required>
+
+            </div>
+            <div class="w3-col m3">
+                <label><i class="fa fa-male"></i> Pax</label>
+                <input class="w3-input w3-border" type="number" placeholder="1" id="occupancy" name="occupancy"
+                    required>
+            </div>
+            <div class="w3-col m3">
+                <br>
+                <button class="w3-button w3-block w3-black" type="submit"><i
+                        class="fa fa-search w3-margin-right"></i>Busca</button>
+            </div>
+        </div>
+    </form>
+    <% } %>
+
+    <div class="w3-container w3-margin-top" id="gallery">
+
+        <h3>Mira qué tenemos para ti, entre otras ofertas:</h3>
+    </div>
+
+    <!--  Show Apartments  -->
+    <div class="w3-row-padding w3-padding-16">
+
+        <% if (foundApartments) { %>
+
+
+        <% apartments.forEach((apartment) => { %>
+        <div class="w3-third w3-margin-bottom">
+            <img src="<%= apartment.photos[0]['url'] %>" alt="main picture" style="width:100%">
+
+            <div class="w3-container w3-white">
+                <h3> <%= apartment.title %> </h3>
+                <p> Desde <%= apartment.price %> €/noche</p>
+                <p><%= apartment.apartmentSize %> m<sup>2</sup></p>
+
+                <p class="w3-large">
+
+                    <% availableServices.forEach((service, i) => { %>
+
+                        <% if (apartment.services.includes(service)) {%>
+                            <span class="fa fa-<%= service %>" title="<%= availableServicesTags[i] %>"></span>
+                        <% } else { %>
+                            <span class="fa fa-<%= service %> w3-opacity-max"></span>
+                        <% } %>
+
+                    <% }); %>                    
+                </p>
+
+                <p class="w3-large">
+
+                    <% availableRules.forEach((rule, i) => { %>
+
+                        <% if (apartment.rulesIcons.includes(rule)) {%>
+                            <span class="fa fa-<%= rule %>" title="<%= availableRulesTags[i] %>"></span>
+                        <% } else { %>
+                            <span class="fa fa-<%= rule %> w3-opacity-max"></span>
+                        <% } %>     
+                        
+                     <% }); %>
+                </p>
+
+                <% if (isAdmin) {%>
+                <button class="w3-button w3-block w3-black w3-margin-bottom"><a style="text-decoration: none;"
+                        href="admin/apartment/:<%= apartment._id %> ">Administración</a></button>
+                <% } else { %>
+                <button class="w3-button w3-block w3-black w3-margin-bottom"><a style="text-decoration: none;"
+                        href="/apartment/:<%= apartment._id %> ">Más información</a></button>
+                <% } %>
+
+            </div>
+        </div>
+        <% }); %>
+
+        <% } else { %>
+
+            <h4>Lo sentimos, no tenemos apartamentos que coincidan con tus criterios de búsqueda.</h4>
+
+        <% } %>
+
+    </div>
+
+    <!-- Team -->
+
+    <div class="w3-row-padding" id="about">
+        <div class="w3-col l4 12">
+            <h3>Sobre nosotros...</h3>
+            <h6>Somos apasionados del mundo del alquiler. Nuestra cartera de apartamentos ha sido cuidadosamente
+                seleccionada para brindar a nuestros clientes los mejores productos y el mejor servicio.</h6>
+            <p>Aceptamos: <i class="fa fa-credit-card w3-large"></i> <i class="fa fa-cc-mastercard w3-large"></i> <i
+                    class="fa fa-cc-amex w3-large"></i> <i class="fa fa-cc-cc-visa w3-large"></i><i
+                    class="fa fa-cc-paypal w3-large"></i></p>
+        </div>
+        <div class="w3-col l8 12">
+
+            <img src="/images/people.png" class="w3-image w3-greyscale" style="width:100%;">
+        </div>
+    </div>
+
+    <div class="w3-row-padding w3-large w3-center" style="margin:32px 0">
+        <div class="w3-third"><i class="fa fa-map-marker w3-text-red"></i> Dirección, Algún lugar, EU</div>
+        <div class="w3-third"><i class="fa fa-phone w3-text-red"></i> Teléfono: +00 151515</div>
+        <div class="w3-third"><i class="fa fa-envelope w3-text-red"></i> Email: mail@mail.com</div>
+    </div>
+
+    <div class="w3-panel w3-red w3-leftbar w3-padding-32">
+        <h6><i class="fa fa-info w3-deep-orange w3-padding w3-margin-right"></i> Bajo demanda, podemos ofrecer otros
+            servicios como equipamiento especial para niños, gente dependiente o con discapacidad, facilidades para
+            mascotas, etc..
+        </h6>
+    </div>
+
+    <!-- Where are us? -->
+
+    <div class="w3-container" id="contact">
+        <h2>Contacto</h2>
+        <p>Si tienes alguna duda, no dudes en contactarnos.</p>
+        <i class="fa fa-map-marker w3-text-red" style="width:30px"></i> Barcelona, CAT<br>
+        <i class="fa fa-phone w3-text-red" style="width:30px"></i> Teléfono: +34 000 00 00 00<br>
+        <i class="fa fa-envelope w3-text-red" style="width:30px"> </i> Email: mail@mail.com<br>
+        <form action="/action_page.php" target="_blank">
+            <p><input class="w3-input w3-padding-16 w3-border" type="text" placeholder="Nombre" required name="Name">
+            </p>
+            <p><input class="w3-input w3-padding-16 w3-border" type="text" placeholder="Email" required name="Email">
+            </p>
+            <p><input class="w3-input w3-padding-16 w3-border" type="text" placeholder="Mensaje" required
+                    name="Message"></p>
+            <p><button class="w3-button w3-black w3-padding-large" type="submit">ENVIAR MENSAJE</button></p>
+        </form>
+    </div>
+
+    <!-- End page content -->
+</div>
+
+<%- include('includes/footer.ejs') %> 
+
+<!-- Add Google Maps -->
+<script>
+    function myMap() {
+        myCenter = new google.maps.LatLng(41.878114, -87.629798);
+        var mapOptions = {
+            center: myCenter,
+            zoom: 12, scrollwheel: false, draggable: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
+
+        var marker = new google.maps.Marker({
+            position: myCenter,
+        });
+        marker.setMap(map);
+    }
+</script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU&callback=myMap"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Apartment</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<%- include('includes/header.ejs') %>
+
+<body class="w3-light-grey">
+    <% 
+    const availableServices = ['bath', 'phone', 'wifi','tv', 'thermometer-4', 'snowflake-o', 'glass', 'cutlery', 'archive', 'car', 'sun-o'];
+    const availableServicesTags = ['Baño', 'Teléfono', 'Wifi', 'TV', 'Calefacción', 'Aire acondicionado', 'Mueble-bar', 'Cocina', 'Trastero', 'Parking', 'Terraza/Balcón']
+    const availableRules = ['fire', 'music', 'paw'];
+    const availableRulesTags = ['Fumar', 'Fiestas', 'Mascotas'];
+    %>
+
+    <!-- Sidebar/menu -->
+    <nav class="w3-sidebar w3-light-grey w3-collapse w3-top" style="z-index:3;width:260px" id="mySidebar">
+        <div class="w3-container w3-display-container w3-padding-16">
+            <i onclick="w3_close()" class="fa fa-remove w3-hide-large w3-button w3-transparent w3-display-topright"></i>
+
+            <h3>Alquilar</h3>
+            <h3>desde <%= apartment.price %> € </h3>
+            <h6>por noche</h6>
+            <hr>
+            <form action="/apartment/:<%= apartment._id %> " method="POST" target="_blank">
+                <p><label><i class="fa fa-calendar-check-o"></i> Entrada</label></p>
+                <input class="w3-input w3-border" type="date" placeholder="DD MM YYYY" name="CheckIn" required>
+                <p><label><i class="fa fa-calendar-o"></i> Salida</label></p>
+                <input class="w3-input w3-border" type="date" placeholder="DD MM YYYY" name="CheckOut" required>
+                <p><label><i class="fa fa-male"></i> Adultos</label></p>
+                <input class="w3-input w3-border" type="number" value="1" name="Adults" min="1" max="6">
+                <p><label><i class="fa fa-child"></i> Niños</label></p>
+                <input class="w3-input w3-border" type="number" value="0" name="Kids" min="0" max="6">
+                <p><a href="/apartment/reservation" style="text-decoration: none;" target="_blank"></a><button
+                        class="w3-button w3-block w3-brown w3-left-align" type="submit"><i
+                            class="fa fa-search w3-margin-right"></i> Buscar disponibilidad</button></a></p>
+            </form>
+        </div>
+        <div class="w3-bar-block">
+            <a href="#apartment" class="w3-bar-item w3-button w3-padding-16"><i class="fa fa-building"></i>
+                Apartamento</a>
+            <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-16"
+                onclick="document.getElementById('subscribe').style.display='block'"><i class="fa fa-rss"></i>
+                Suscríbete</a>
+            <a href="#contact" class="w3-bar-item w3-button w3-padding-16"><i class="fa fa-envelope"></i> Contacto</a>
+        </div>
+    </nav>
+
+    <!-- Top menu on small screens -->
+    <header class="w3-bar w3-top w3-hide-large w3-black w3-xlarge">
+        <span class="w3-bar-item">Alquiler</span>
+        <a href="javascript:void(0)" class="w3-right w3-bar-item w3-button" onclick="w3_open()"><i
+                class="fa fa-bars"></i></a>
+    </header>
+
+    <!-- Overlay effect when opening sidebar on small screens -->
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+        id="myOverlay"></div>
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main w3-white" style="margin-left:260px">
+
+        <!-- Push down content on small screens -->
+        <div class="w3-hide-large" style="margin-top:80px"></div>
+
+        <!-- Navigation Bar -->
+        <div class="w3-bar w3-light-grey w3-large">
+            <% if (isAdmin) { %>
+            <a href="/admin" class="w3-bar-item w3-button w3-brown w3-mobile"><i
+                    class="fa fa-home w3-margin-right"></i>Más pisos</a>
+            <a href="/admin/apartment/:<%= apartment._id %>/edit" class="w3-bar-item w3-button w3-mobile">Editar</a>
+            <a href="#" class="w3-bar-item w3-button w3-red w3-mobile"
+                onclick="document.getElementById('remove').style.display='block'">Borrar</a>
+            <% } else { %>
+            <a href="/" class="w3-bar-item w3-button w3-brown w3-mobile"><i class="fa fa-home w3-margin-right"></i>Más
+                pisos</a>
+            <% } %>
+        </div>
+
+        <!-- Slideshow Header -->
+        <div class="w3-container" id="apartment">
+            <h2 class="w3-text-black"><%= apartment.title %> </h2>
+
+            <% apartment.photos.forEach((photo) => { %>
+            <div class="w3-display-container mySlides">
+                <img src="<%= photo.url %>" style="width:100%;margin-bottom:-6px">
+                <div class="w3-display-bottomleft w3-container w3-black">
+                    <p><%= photo.title %></p>
+                </div>
+            </div>
+
+            <% }) %>
+        </div>
+
+        <!-- Slideshow Header Opacity Effect and Current View -->
+        <div class="w3-row-padding w3-section">
+            <% apartment.photos.forEach((photo, ind) => { %>
+            <div class="w3-col s3">
+                <img class="demo w3-opacity w3-hover-opacity-off" src="<%= photo['url'] %>"
+                    style="width:100%;cursor:pointer" onclick="currentDiv(<%= ind + 1 %>)"
+                    title="<%= photo['title'] %>">
+            </div>
+            <% }); %>
+        </div>
+
+        <!-- Additional info -->
+        <div id="info" class="w3-container">
+            <h4><strong>El espacio</strong></h4>
+            <div class="w3-row w3-large">
+                <div class="w3-col s6">
+                    <p><i class="fa fa-fw fa-home"></i> Superficie habitable: <%= apartment.apartmentSize %>
+                        m<sup>2</sup></p>
+                    <p><i class="fa fa-fw fa-male"></i> Máxima capacidad: <%= apartment.occupancy %> </p>
+                    <p><i class="fa fa-fw fa-bath"></i> Lavabos: <%= apartment.bathRooms %> </p>
+                    <p><i class="fa fa-fw fa-bed"></i> Habitaciones: <%= apartment.rooms %> </p>
+                </div>
+                <div class="w3-col s6">
+                    <p><i class="fa fa-fw fa-bed"></i> Camas dobles: <%= apartment.beds[0]['beds'] %> </p>
+                    <p><i class="fa fa-fw fa-bed"></i> Camas simples: <%= apartment.beds[1]['beds'] %></p>
+                    <p><i class="fa fa-fw fa-bed"></i> Camas adicionales: <%= apartment.beds[1]['additionalBeds'] %>
+                    </p>
+
+                </div>
+            </div>
+            <hr>
+
+            <h4><strong>Equipamiento</strong></h4>
+            <div class="w3-row w3-large">
+
+                <% availableServices.forEach((service, i) => { %>
+                <div class="w3-col s6">
+                    <% if (apartment.services.includes(service) && (i%2==0)) {%>
+                    <p><i class="fa fa-fw fa-<%= service %>"></i> <%= availableServicesTags[i] %> </p>
+                    <% } %>
+                </div>
+                <div class="w3-col s6">
+                    <% if (apartment.services.includes(service) && (i%2==1)) {%>
+                    <p><i class="fa fa-fw fa-<%= service %>"></i> <%= availableServicesTags[i] %></p>
+                    <% } %>
+                </div>
+                <% }) %>
+
+            </div>
+            <hr>
+
+            <h4><strong>Se permite...</strong></h4>
+            <div class="w3-row w3-large">
+
+                <% availableRules.forEach((rule, i) => { %>
+                <div class="w3-col s6">
+                    <% if (apartment.rulesIcons.includes(rule) && (i%2==0)) {%>
+                    <p><i class="fa fa-fw fa-<%= rule %>"></i> <%= availableRulesTags[i] %> </p>
+                    <% } %>
+                </div>
+                <div class="w3-col s6">
+                    <% if (apartment.rulesIcons.includes(rule) && (i%2==1)) {%>
+                    <p><i class="fa fa-fw fa-<%= rule %>"></i> <%= availableRulesTags[i] %></p>
+                    <% } %>
+                </div>
+                <% }) %>
+
+            </div>
+            <hr>
+
+            <h4><strong>Descripción</strong></h4>
+            <p> <%= apartment.description %> </p>
+            <hr>
+
+            <h4><strong>Reglas</strong></h4>
+            <p> <%= apartment.rulesDescription %> </p>
+            <hr>
+
+            <h4><strong>Localización</strong></h4>
+            <div class="w3-row w3-large">
+                <p><i class="fa fa-fw fa-globe"></i> Está en: <%= apartment.location.city %>
+                    (<%= apartment.location.province %>) </p>
+                <p data-latitude="<%= apartment.location.GPS[1] %>" data-longitude="<%= apartment.location.GPS[0] %>"><i
+                        class="fa fa-fw fa-bullseye"></i> Long: <%= apartment.location.GPS[0] %><sup>o</sup>, Lat:
+                    <%= apartment.location.GPS[1] %><sup>o</sup> </p>
+
+            </div>
+            <div id="googleMap" style="width:100%;height:400px;"></div>
+            <hr>
+
+
+            <p>Aceptamos: <i class="fa fa-credit-card w3-large"></i> <i class="fa fa-cc-mastercard w3-large"></i> <i
+                    class="fa fa-cc-amex w3-large"></i> <i class="fa fa-cc-cc-visa w3-large"></i><i
+                    class="fa fa-cc-paypal w3-large"></i></p>
+            <hr>
+
+            <p>Suscríbete para recibir actualizaciones y confirmar fechas de reserva.</p>
+            <p><button class="w3-button w3-green w3-third"
+                    onclick="document.getElementById('subscribe').style.display='block'">Suscripción</button></p>
+        </div>
+        <hr>
+
+        <!-- End page content -->
+    </div>
+
+    <%- include('includes/footer.ejs') %>
+
+    <!-- Remove Modal -->
+
+    <% if (isAdmin) { %>
+    <div id="remove" class="w3-modal">
+        <div class="w3-modal-content w3-animate-zoom w3-padding-large">
+            <div class="w3-container w3-white w3-center">
+                <i onclick="document.getElementById('remove').style.display='none'"
+                    class="fa fa-remove w3-button w3-xlarge w3-right w3-transparent"></i>
+                <h2 class="w3-wide">BORRAR APARTAMENTO</h2>
+                <p>¡El apartamento será irrecuperable!</p>
+                <p>¿ESTÁS SEGURO?</p>
+                <div class="w3-row">
+                    <button type="button" class="w3-button w3-padding-large w3-red w3-margin-bottom"
+                        onclick="document.getElementById('remove').style.display='none'"> <a
+                            href="/admin/apartment/:<%= apartment._id %>/delete"> Sí </a></button>
+                    <button type="button" class="w3-button w3-padding-large w3-green w3-margin-bottom"
+                        onclick="document.getElementById('remove').style.display='none'">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <% } %>
+
+    <script>
+        // Script to open and close sidebar when on tablets and phones
+        function w3_open() {
+            document.getElementById("mySidebar").style.display = "block";
+            document.getElementById("myOverlay").style.display = "block";
+        }
+
+        function w3_close() {
+            document.getElementById("mySidebar").style.display = "none";
+            document.getElementById("myOverlay").style.display = "none";
+        }
+
+        // Slideshow Apartment Images
+        var slideIndex = 1;
+        showDivs(slideIndex);
+
+        function plusDivs(n) {
+            showDivs(slideIndex += n);
+        }
+
+        function currentDiv(n) {
+            showDivs(slideIndex = n);
+        }
+
+        function showDivs(n) {
+            var i;
+            var x = document.getElementsByClassName("mySlides");
+            var dots = document.getElementsByClassName("demo");
+            if (n > x.length) { slideIndex = 1 }
+            if (n < 1) { slideIndex = x.length }
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" w3-opacity-off", "");
+            }
+            x[slideIndex - 1].style.display = "block";
+            dots[slideIndex - 1].className += " w3-opacity-off";
+        }
+
+        function myMap() {
+
+            var coord_X = document.querySelector('[data-longitude]').getAttribute('data-longitude');
+            var coord_Y = document.querySelector('[data-latitude]').getAttribute('data-latitude');
+
+
+
+            var mapProp = {
+                center: new google.maps.LatLng(coord_Y, coord_X),
+                zoom: 7,
+            };
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(coord_Y, coord_X),
+                animation: google.maps.Animation.BOUNCE
+            });
+
+            marker.setMap(map);
+        }
+    </script>
+
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVI06Mt3PTyaeeWCDkdyf4Y1FUOGJ9AJI&callback=myMap"></script>
+
+</body>
+
+</html>
